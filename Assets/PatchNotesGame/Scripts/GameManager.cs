@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections.Generic;
 public class GameManager : MonoBehaviour
 {
     private enum GameState
@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject playerPrefab;
     private int maxLives = 3;
     private int currentLives;
+
+    //[SerializeField] public List<BugAbilityBase> unlockedAbilities = new List<BugAbilityBase>();
 
     private void Awake()
     {
