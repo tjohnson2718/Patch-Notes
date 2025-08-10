@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 5f;
-    private bool isGrounded = true;
+    public bool isGrounded = true;
     private Rigidbody2D rb;
 
     [Header("Sprite Settings")]
@@ -26,6 +26,8 @@ public class PlayerController : MonoBehaviour
     public AnimationClip jump;
     public AnimationClip walk;
     public AnimationClip idle;
+
+    public bool controlsInverted = false;
 
     private void Awake()
     {
@@ -61,7 +63,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Jump") && !isDead) // Check if the jump button is pressed (default is Space key)
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        UpdatePlayerSprite(horizontalInput);
+
+        if (Input.GetButtonDown("Jump") && !isDead)
         {
             Jump();
         }
@@ -70,46 +75,36 @@ public class PlayerController : MonoBehaviour
         {
             animator?.SetBool("isFalling", true);
         }
+
+        if (!isDead && Input.GetKeyDown(KeyCode.Q))
+        {
+            PlayerInventory.Instance?.UseEquippedBug(gameObject);
+        }
     }
 
     void FixedUpdate()
     {
         if (isDead) return;
         float horizontalInput = Input.GetAxisRaw("Horizontal"); // Get horizontal input (A/D or Left/Right Arrow keys)
-        MovePlayer(horizontalInput);
+
+        if (controlsInverted) horizontalInput = -horizontalInput;
+        rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
     }
 
     #region Player Movement
-    private void MovePlayer(float horizontalInput)
+    private void UpdatePlayerSprite(float horizontalInput)
     {
-        Vector2 movement = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
-        rb.linearVelocity = movement;
-
-        if (animator)
-        {
-            if (Mathf.Abs(horizontalInput) > 1.0f)
-            {
-                Debug.LogWarning("Horizontal input is greater than 1.0f, which may cause unexpected behavior in animation speed.");
-            }
-            animator.SetFloat("MoveSpeed", Mathf.Abs(horizontalInput));
-        }
-
-        // Flip the sprite based on movement direction
-        if (horizontalInput > 0)
-        {
-            spriteRenderer.flipX = false; // Facing right
-        }
-        else if (horizontalInput < 0)
-        {
-            spriteRenderer.flipX = true; // Facing left
-        }
+        animator?.SetFloat("MoveSpeed", Mathf.Abs(horizontalInput));
+        if (horizontalInput > 0) spriteRenderer.flipX = false;
+        else if (horizontalInput < 0) spriteRenderer.flipX = true;
     }
 
     private void Jump()
     {
         if (isGrounded)
         {
-            rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            float currentJumpForce = controlsInverted ? -jumpForce : jumpForce;
+            rb.AddForce(new Vector2(0, currentJumpForce), ForceMode2D.Impulse);
             animator?.SetBool("isJumping", true);
             isGrounded = false; // Prevent double jumping
         }
