@@ -8,8 +8,8 @@ public class BugTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            bug.Activate();
-            if (puzzle != null && !puzzle.isActive) puzzle.Activate();
+            if (!bug.isActive && !bug.isFixed) bug.Activate();
+            if (puzzle != null) puzzle.Activate();
         }
     }
 }
