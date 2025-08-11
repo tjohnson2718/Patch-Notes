@@ -41,6 +41,11 @@ public class GameManager : MonoBehaviour
         currentLives = maxLives;
     }
 
+    private void Start()
+    {
+        playerPrefab = GameObject.FindWithTag("Player");
+    }
+
     public void StartGame ()
     {
         currentState = GameState.Hub;
@@ -89,6 +94,7 @@ public class GameManager : MonoBehaviour
 
     public void OnPlayerDeath()
     {
+        UIManager.Instance?.LoseLife(currentLives);
         currentLives--;
         if (currentLives <= 0)
         {

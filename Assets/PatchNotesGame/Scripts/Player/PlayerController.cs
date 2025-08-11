@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance { get; private set; }
+
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 5f;
@@ -15,8 +17,8 @@ public class PlayerController : MonoBehaviour
     private bool facingRight = true;
 
     [Header("Player Settings")]
-    [SerializeField] private float maxHealth = 100f;
-    [SerializeField] public Vector2 spawnPosition = new Vector2(0, 0);
+    [SerializeField] public float maxHealth = 100f;
+    [SerializeField] public Transform spawnPosition;
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private float fireCooldown = 1.0f;
     [SerializeField] private float maxFireAngle = 45f;
@@ -24,7 +26,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform firePoint;
     public bool isDead = false;
     public bool canTakeDamage = true;
-    private float currentHealth = 100f;
+    public float currentHealth = 100f;
     private bool canFire = true;
 
     [Header("Animations")]
@@ -34,10 +36,23 @@ public class PlayerController : MonoBehaviour
     public AnimationClip walk;
     public AnimationClip idle;
 
+    [Header("Player")]
+    [SerializeField] private AudioSource audio;
+    [SerializeField] private AudioClip jumpSound;
     public bool controlsInverted = false;
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
         if (!spriteRenderer)
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
@@ -134,6 +149,8 @@ public class PlayerController : MonoBehaviour
     {
         if (isGrounded)
         {
+            audio.clip = jumpSound;
+            audio.Play();
             float currentJumpForce = controlsInverted ? -jumpForce : jumpForce;
             rb.AddForce(new Vector2(0, currentJumpForce), ForceMode2D.Impulse);
             animator?.SetBool("isJumping", true);
@@ -181,14 +198,13 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Spawn Management
-    public void SetSpawnPosition(Vector2 position)
+    public void SetSpawn(Transform transform)
     {
-        spawnPosition = position;
+        spawnPosition = transform;
     }
-
     public void RespawnPlayer()
     {
-        transform.position = spawnPosition;
+        transform.position = spawnPosition.position;
         ResetPlayer();
     }
     #endregion

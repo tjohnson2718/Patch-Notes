@@ -14,6 +14,11 @@ public class SonicBubble : MonoBehaviour
     [SerializeField] private float bounceTimeMax = 5f;
     [SerializeField] private float damage = 5;
 
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource audio;
+    [SerializeField] private AudioClip launchSound;
+    [SerializeField] private AudioClip explodeSound;
+
     private bool isBouncy = false;
     private Rigidbody2D rb;
     private Rigidbody2D playerRigidbody;
@@ -31,6 +36,8 @@ public class SonicBubble : MonoBehaviour
     private void Start()
     {
         rb.linearVelocity = direction * speed;
+        audio.clip = launchSound;
+        audio.Play();
     }
     private void OnTriggerEnter2D(Collider2D collider)
     {
@@ -53,7 +60,8 @@ public class SonicBubble : MonoBehaviour
     {
         animator.SetTrigger("OnHit");
         rb.linearVelocity = Vector2.zero;
-        //StartCoroutine(WaitForExplosion(explosionClip.length));
+        audio.clip = explodeSound;
+        audio.Play();
     }
 
     private void OnPlayerHit()
