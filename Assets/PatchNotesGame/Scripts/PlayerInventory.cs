@@ -26,7 +26,7 @@ public class PlayerInventory : MonoBehaviour
     {
         unlockedBugs.Add(ability);
 
-        if (unlockedBugs.Count == 1)
+        if (unlockedBugs.Count == 1 && ability.abilityType != AbilityType.Passive)
         {
             equippedBug = unlockedBugs[0];
         }
