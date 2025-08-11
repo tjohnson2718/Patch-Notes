@@ -12,13 +12,20 @@ public class PlayerController : MonoBehaviour
     [Header("Sprite Settings")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Animator animator;
+    private bool facingRight = true;
 
     [Header("Player Settings")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] public Vector2 spawnPosition = new Vector2(0, 0);
+    [SerializeField] private GameObject fireballPrefab;
+    [SerializeField] private float fireCooldown = 1.0f;
+    [SerializeField] private float maxFireAngle = 45f;
+    [SerializeField] private float firePointDistFromPlayer = 1.0f;
+    [SerializeField] private Transform firePoint;
     public bool isDead = false;
     public bool canTakeDamage = true;
     private float currentHealth = 100f;
+    private bool canFire = true;
 
     [Header("Animations")]
     [SerializeField]
@@ -66,6 +73,22 @@ public class PlayerController : MonoBehaviour
         float horizontalInput = Input.GetAxisRaw("Horizontal");
         UpdatePlayerSprite(horizontalInput);
 
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0f;
+
+        Vector2 aimDirection = (mouseWorldPos - firePoint.position).normalized;
+        float angleToMouse = Vector2.Angle(facingRight ? Vector2.right : Vector2.left, aimDirection);
+
+        if (angleToMouse <= maxFireAngle)
+        {
+            firePoint.position = transform.position + (Vector3)aimDirection * firePointDistFromPlayer;
+        }
+
+        if (Input.GetMouseButtonDown(0) && angleToMouse <= maxFireAngle)
+        {
+            Fire(aimDirection);
+        }
+
         if (Input.GetButtonDown("Jump") && !isDead)
         {
             Jump();
@@ -95,8 +118,16 @@ public class PlayerController : MonoBehaviour
     private void UpdatePlayerSprite(float horizontalInput)
     {
         animator?.SetFloat("MoveSpeed", Mathf.Abs(horizontalInput));
-        if (horizontalInput > 0) spriteRenderer.flipX = false;
-        else if (horizontalInput < 0) spriteRenderer.flipX = true;
+        if (horizontalInput > 0)
+        {
+            spriteRenderer.flipX = false;
+            facingRight = true;
+        }
+        else if (horizontalInput < 0)
+        {
+            spriteRenderer.flipX = true;
+            facingRight = false;
+        }
     }
 
     private void Jump()
@@ -111,6 +142,16 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
+    #region Attacking
+    private void Fire(Vector2 direction)
+    {
+        if (!canFire) return;
+
+        GameObject fireBall = Instantiate(fireballPrefab, firePoint.position, Quaternion.identity);
+        fireBall.GetComponent<Fireball>().direction = direction;
+    }
+    #endregion
+
     #region Health Management
     public void TakeDamage(float damageAmount)
     {
@@ -118,6 +159,7 @@ public class PlayerController : MonoBehaviour
         {
             currentHealth -= damageAmount;
             canTakeDamage = false;
+            animator.SetTrigger("OnHit");
             StartCoroutine(WaitForEnableDamage(1f));
         }
 
@@ -130,13 +172,9 @@ public class PlayerController : MonoBehaviour
     private void KillPlayer()
     {
         isDead = true;
-        // Notify game manager to check if the player is out of lives
-        // GameManager.Instance?.CheckPlayerLives(); // Assuming GameManager has a method to check player lives
         animator?.SetBool("isDead", true);
         rb.linearVelocity = Vector2.zero;
 
-        //TogglePlayerPhysics(false);
-        //AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         Debug.Log("Player is dead. Waiting for respawn animation time of: " + death.length + " seconds.");
         StartCoroutine(WaitAndRespawn(death.length));
     }

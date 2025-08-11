@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     private GameState currentState = GameState.Playing;
 
     [Header("Player Settings")]
-    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] public GameObject playerPrefab;
     private int maxLives = 3;
     private int currentLives;
 
