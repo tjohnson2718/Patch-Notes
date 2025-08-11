@@ -70,6 +70,7 @@ public class GravityFlipPuzzle : PuzzleBase
         else
         {
             spawnedOrb.OnComplete();
+            spawnedOrb = null;
             SpawnOrb();
         }
     }

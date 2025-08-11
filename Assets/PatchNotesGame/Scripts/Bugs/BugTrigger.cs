@@ -9,7 +9,7 @@ public class BugTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             bug.Activate();
-            if (puzzle != null) puzzle.Activate();
+            if (puzzle != null && !puzzle.isActive) puzzle.Activate();
         }
     }
 }
