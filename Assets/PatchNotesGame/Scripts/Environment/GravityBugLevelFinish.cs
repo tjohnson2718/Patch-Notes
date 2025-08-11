@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UIElements;

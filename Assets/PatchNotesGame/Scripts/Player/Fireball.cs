@@ -10,6 +10,9 @@ public class Fireball : MonoBehaviour
     [SerializeField] private AnimationClip explosionClip;
     [SerializeField] private GameObject explosionPrefab;
     [SerializeField] private float activeTime = 10f;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip fireAudioClip;
+    [SerializeField] private AudioClip explodeAudioClip;
     public Vector2 direction = Vector2.right;
 
     private Rigidbody2D rb;
@@ -23,6 +26,8 @@ public class Fireball : MonoBehaviour
 
     private void Start()
     {
+        audioSource.clip = fireAudioClip;
+        audioSource.Play();
         rb.AddForce(direction.normalized * speed, ForceMode2D.Impulse);
     }
 
@@ -46,6 +51,9 @@ public class Fireball : MonoBehaviour
         gameObject.GetComponent<SpriteRenderer>().enabled = false;
         gameObject.GetComponent<CircleCollider2D>().enabled = false;
         explosion = Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.identity);
+
+        audioSource.clip = explodeAudioClip;
+        audioSource.Play();
         StartCoroutine(WaitForExplosion());
     }
 

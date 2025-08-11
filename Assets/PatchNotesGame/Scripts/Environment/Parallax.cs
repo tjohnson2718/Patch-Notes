@@ -8,6 +8,20 @@ public class Parallax : MonoBehaviour
     public GameObject cam;
     [SerializeField] public float parallaxEffect;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    private void Awake()
+    {
+        PersistCamera persistentCam = FindFirstObjectByType<PersistCamera>();
+
+        if (persistentCam != null)
+        {
+            cam = persistentCam.gameObject;
+        }
+        else
+        {
+            Debug.LogWarning("Persistent camera not found");
+        }
+    }
     void Start()
     {
         startpos = transform.position.x;
