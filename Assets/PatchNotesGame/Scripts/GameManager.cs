@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     private enum GameState
@@ -7,12 +9,14 @@ public class GameManager : MonoBehaviour
         MainMenu,
         Playing,
         Paused,
-        GameOver
+        GameOver,
+        Hub,
+        GravityBug
     }
 
     public static GameManager Instance { get; private set; }
 
-    private GameState currentState = GameState.Playing;
+    private GameState currentState = GameState.MainMenu;
 
     [Header("Player Settings")]
     [SerializeField] public GameObject playerPrefab;
@@ -37,7 +41,28 @@ public class GameManager : MonoBehaviour
         currentLives = maxLives;
     }
 
-    private void Update()
+    public void StartGame ()
+    {
+        currentState = GameState.Hub;
+        SceneSet();
+    }
+    
+    public void ChangeGameState (string sceneToChangeTo)
+    {
+        if(SceneManager.GetActiveScene().name.Equals("Hub") && sceneToChangeTo.Equals("GravityBug"))
+        {
+            currentState = GameState.GravityBug;
+            SceneSet();
+        }
+        if (SceneManager.GetActiveScene().name.Equals("GravityBug") && sceneToChangeTo.Equals("Hub"))
+        {
+            currentState = GameState.Hub;
+            SceneSet();
+        }
+
+    }
+
+    private void SceneSet()
     {
         switch (currentState)
         {
@@ -52,6 +77,12 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.GameOver:
                 // Handle game over logic
+                break;
+            case GameState.Hub:
+                SceneManager.LoadScene("Hub");
+                break;
+            case GameState.GravityBug:
+                SceneManager.LoadScene("GravityBug");
                 break;
         }
     }
