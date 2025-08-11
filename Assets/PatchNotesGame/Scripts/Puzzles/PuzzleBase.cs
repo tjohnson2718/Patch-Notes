@@ -18,15 +18,18 @@ public abstract class PuzzleBase : MonoBehaviour
 
 
     public bool isActive { get; private set; }
+    public bool isComplete { get; private set; }
 
     public virtual void Activate()
     {
+        if (isActive || isComplete) return;
         isActive = true;
         OnActivate();
     }
     public virtual void Complete()
     {
         isActive = false;
+        isComplete = true;
         OnComplete();
     }
 

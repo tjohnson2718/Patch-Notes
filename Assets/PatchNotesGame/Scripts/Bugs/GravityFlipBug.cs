@@ -16,8 +16,8 @@ public class GravityFlipBug : BugBase
     protected override void OnActivate()
     {
         if (playerRigidbody == null) playerRigidbody = GameManager.Instance?.playerPrefab.GetComponent<Rigidbody2D>();
-        if (playerRigidbody == null) playerTransform = GameManager.Instance?.playerPrefab.GetComponent<Transform>();
-        if (playerRigidbody == null) playerController = GameManager.Instance?.playerPrefab.GetComponent<PlayerController>();
+        if (playerTransform == null) playerTransform = GameManager.Instance?.playerPrefab.transform;
+        if (playerController == null) playerController = GameManager.Instance?.playerPrefab.GetComponent<PlayerController>();
         StartCoroutine(WatchForGravityFlip());
     }
 
