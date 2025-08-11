@@ -1,17 +1,22 @@
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PersistCamera : MonoBehaviour
 {
-    private void Awake()
-    {
-        // If another camera of this type exists, destroy the duplicate
-        var existing = FindObjectsByType<PersistCamera>(FindObjectsSortMode.None);
-        if (existing.Length > 1)
-        {
-            Destroy(gameObject);
-            return;
-        }
+    CinemachineCamera vcam;
 
+    void Awake()
+    {
         DontDestroyOnLoad(gameObject);
+        vcam = GetComponent<CinemachineCamera>();
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        var player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+            vcam.Follow = player.transform;
     }
 }

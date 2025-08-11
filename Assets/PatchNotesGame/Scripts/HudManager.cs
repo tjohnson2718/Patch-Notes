@@ -21,10 +21,25 @@ public class UIManager : MonoBehaviour
             }
 
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
     }
 
+    private void Start()
+    {
+        int numLives = GameManager.Instance.currentLives;
+        switch (numLives)
+        {
+            case 1: // Player Has 1 Life
+                LoseLife(3);
+                LoseLife(2);
+                break;
+            case 2: // Player has 2 Lives
+                LoseLife(3);
+                break;
+            case 3: // Player has all 3 lives
+                break;
+        }
+    }
     private void Update()
     {
         healthFillImage.fillAmount = Mathf.Clamp01(GetHealthFillValue());

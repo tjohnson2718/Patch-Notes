@@ -42,4 +42,19 @@ public class PlayerInventory : MonoBehaviour
         if (!equippedBug) return;
         equippedBug.Use(player);
     }
+
+    public bool CheckForUnlockedBug(string bugName)
+    {
+        bool found = false;
+        foreach (SO_BugAbility ability in unlockedBugs)
+        {
+            if (ability.bugName.ToLower().Equals(bugName.ToLower()))
+            {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
+    }
 }

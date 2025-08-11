@@ -11,7 +11,8 @@ public class GameManager : MonoBehaviour
         Paused,
         GameOver,
         Hub,
-        GravityBug
+        GravityBug,
+        SonicBug,
     }
 
     public static GameManager Instance { get; private set; }
@@ -21,7 +22,7 @@ public class GameManager : MonoBehaviour
     [Header("Player Settings")]
     [SerializeField] public GameObject playerPrefab;
     private int maxLives = 3;
-    private int currentLives;
+    public int currentLives;
 
     //[SerializeField] public List<BugAbilityBase> unlockedAbilities = new List<BugAbilityBase>();
 
@@ -58,13 +59,26 @@ public class GameManager : MonoBehaviour
         {
             currentState = GameState.GravityBug;
             SceneSet();
+            return;
         }
         if (SceneManager.GetActiveScene().name.Equals("GravityBug") && sceneToChangeTo.Equals("Hub"))
         {
             currentState = GameState.Hub;
             SceneSet();
+            return;
         }
-
+        if (SceneManager.GetActiveScene().name.Equals("Hub") && sceneToChangeTo.Equals("SonicBug"))
+        {
+            currentState = GameState.SonicBug;
+            SceneSet();
+            return;
+        }
+        if (SceneManager.GetActiveScene().name.Equals("SonicBug") && sceneToChangeTo.Equals("Hub"))
+        {
+            currentState = GameState.Hub;
+            SceneSet();
+            return;
+        }
     }
 
     private void SceneSet()
@@ -88,6 +102,9 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.GravityBug:
                 SceneManager.LoadScene("GravityBug");
+                break;
+            case GameState.SonicBug:
+                SceneManager.LoadScene("SonicBug");
                 break;
         }
     }
